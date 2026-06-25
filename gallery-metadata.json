@@ -1,0 +1,18 @@
+{
+  "name": "NOFX",
+  "slug": "nofx",
+  "category": "AI / Trading",
+  "pitch": "Self-host NOFX on Render: AI-powered trading terminal with multi-exchange support, strategy studio, and a conversational agent.",
+  "repo": "https://github.com/render-examples/nofx-render-template",
+  "upstream": "https://github.com/NoFxAiOS/nofx",
+  "license_template": "MIT",
+  "license_upstream": "AGPL-3.0",
+  "estimated_monthly_cost_usd": 12,
+  "resources": [
+    { "type": "web", "plan": "starter", "notes": "All-in-one Docker (nginx + Go API + React UI)" },
+    { "type": "disk", "sizeGB": 5, "notes": "SQLite at /app/data/data.db" }
+  ],
+  "required_secrets": [],
+  "generated_secrets": ["JWT_SECRET", "DATA_ENCRYPTION_KEY"],
+  "contact_email": ""
+}
