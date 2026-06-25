@@ -11,7 +11,8 @@ Use when filing a **production** catalog entry for [render.com/templates](https:
 
 ## Blockers before submit
 
-- [x] **`assets/hero.png`** from live deploy screenshot
+- [x] **`assets/hero.png`** — sign-in screenshot (catalog card; copy of `sign-in.png`)
+- [x] **`assets/sign-in.png`**, **`assets/config.png`**, **`assets/agent.png`** — live deploy screenshots for README / detail page
 - [x] Repo published under **`render-examples/nofx-render-template`** with `is_template: true`
 - [ ] Smoke deploy from an account that does not own the template repo
 - [ ] Sanity **development** draft in Studio (see [`../sanity-drafts/STUDIO-WALKTHROUGH.md`](../sanity-drafts/STUDIO-WALKTHROUGH.md))
@@ -29,7 +30,7 @@ Create document: **Templates** → new document
 | **Description** | Self-host NOFX with one click: an AI trading terminal that connects to 10+ exchanges and LLM providers. Single Render web service with SQLite on a persistent disk. |
 | **GitHub Repository** | `https://github.com/render-examples/nofx-render-template` |
 | **Demo URL** | `https://nofx-scgi.onrender.com/` |
-| **Image** | Upload `assets/hero.png` |
+| **Image** | Upload `assets/hero.png` (sign-in page; same as `sign-in.png`) |
 | **Stack** | `docker`, `go`, `react`, `sqlite` |
 | **Tags** | `ai`, `trading`, `llm`, `crypto`, `fintech` |
 | **Sort Order** | *(optional)* |

@@ -6,9 +6,15 @@
 
 This template packages [NOFX](https://github.com/NoFxAiOS/nofx) for Render using official `ghcr.io/nofxaios/nofx` Docker images merged into a single container. You get nginx (UI + reverse proxy), the Go API, and SQLite on a persistent disk without building the upstream monorepo on Render. Fork the template into your GitHub account, apply the Blueprint, then create your admin account on first visit.
 
-![NOFX Config page on Render](./assets/hero.png)
+![NOFX sign-in on Render](./assets/hero.png)
 
-> **Gallery listing:** GitHub repo is live at [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template). Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md).
+**Screenshots from a live Render deploy** ([demo](https://nofx-scgi.onrender.com/)):
+
+| Sign in | Config | Agent |
+|---------|--------|-------|
+| ![Sign in](./assets/sign-in.png) | ![Config](./assets/config.png) | ![Agent](./assets/agent.png) |
+
+> **Gallery listing:** GitHub repo is live at [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template). Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md). Upload **`assets/hero.png`** (sign-in) for the catalog card; Config and Agent appear in the template detail body below.
 
 **Live demo:** https://nofx-scgi.onrender.com/
 
