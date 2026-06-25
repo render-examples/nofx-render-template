@@ -26,6 +26,7 @@ The template packages [NOFX](https://github.com/NoFxAiOS/nofx) using official `g
 
 ## Table of contents
 
+- [How this repo relates to NOFX source code](#how-this-repo-relates-to-nofx-source-code)
 - [Why deploy NOFX on Render](#why-deploy-nofx-on-render)
 - [Use cases](#use-cases)
 - [What gets deployed](#what-gets-deployed)
@@ -40,6 +41,24 @@ The template packages [NOFX](https://github.com/NoFxAiOS/nofx) using official `g
 - [Security](#security)
 - [Caveats and limitations](#caveats-and-limitations)
 - [Credits and license](#credits-and-license)
+
+---
+
+## How this repo relates to NOFX source code
+
+**Yes, this repository looks different from a full NOFX checkout.** That is intentional.
+
+| Repository | What it contains | Role |
+|------------|------------------|------|
+| [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) | Full app source (Go API, React UI, Docker build files) | Upstream application |
+| [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template) | `render.yaml`, `Dockerfile.railway`, `railway/start.sh`, docs, screenshots | **Gallery template** (this repo) |
+| Personal forks (e.g. `ojusave/nofx`) | Full source + optional Render Blueprint commits | Development or custom deploys |
+
+This template uses the **image-wrapper** pattern (same as [dify-render-template](https://github.com/render-examples/dify-render-template)): Render does **not** build the monorepo from source. `Dockerfile.railway` pulls prebuilt images from `ghcr.io/nofxaios/nofx/*` and merges them with nginx + SQLite on disk.
+
+**What matches a full NOFX repo:** `Dockerfile.railway` and `railway/start.sh` are the same files used in upstream for Railway/Render all-in-one deploys. The **running service** is the same binary/UI as GHCR `:latest`, not a separate codebase.
+
+**What is not in this repo:** `web/`, `api/`, and other application source directories. For hacking on NOFX itself, use [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx). For one-click Render deploy, use **this template**.
 
 ---
 
