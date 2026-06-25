@@ -15,8 +15,6 @@ Product overview and upstream docs: [docs/README-product.md](./docs/README-produ
 
 **Screenshots** (from a Render deploy):
 
-![Sign in](./assets/sign-in.png)
-
 ![Config — AI models and exchanges](./assets/config.png)
 
 ![Agent — natural-language trader setup](./assets/agent.png)
