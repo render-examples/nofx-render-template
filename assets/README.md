@@ -5,8 +5,6 @@ Screenshots for [render.com/templates/nofx](https://render.com/templates/nofx) (
 - **`hero.png`** — Sign-in page; upload to Sanity **Image** field (catalog card)
 - **`sign-in.png`**, **`config.png`**, **`agent.png`** — Detail page screenshots (embedded in README markdown body)
 
-All assets live in **this repo** (`render-examples/nofx-render-template`), not in personal forks.
-
 Recommended hero size: 1600×900. Current captures are 1024×589 and work but can be re-exported wider.
 
 For Sanity **markdownBody**, use absolute raw URLs so images render on the template detail page:

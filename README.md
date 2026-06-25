@@ -4,10 +4,9 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)
 
-**Repository:** [github.com/ojusave/nofx](https://github.com/ojusave/nofx) (branch `dev`)  
-**Gallery mirror:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template) (same tree; powers the one-click fork above)
+**Repository:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
 
-This repo is the **full NOFX application** (Go API, React UI, Docker files) plus a Render Blueprint. Fork via the button to get your own copy, apply `render.yaml`, and deploy with `Dockerfile.railway` (official GHCR images + nginx + SQLite on disk).
+This repo is the **full NOFX application** (Go API, React UI, Docker files) plus a Render Blueprint. Fork via the button to get your own copy, apply `render.yaml`, and deploy with `Dockerfile.render` (official GHCR images + nginx + SQLite on disk).
 
 Product overview and upstream docs: [docs/README-product.md](./docs/README-product.md) · upstream [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx)
 
@@ -45,7 +44,7 @@ Product overview and upstream docs: [docs/README-product.md](./docs/README-produ
 ## Why deploy NOFX on Render
 
 - **Full source in this repo** — Hack on `web/`, the Go API, and Docker build files; deploy with the included Blueprint.
-- **Fast default path** — `Dockerfile.railway` pulls official `ghcr.io/nofxaios/nofx` images (no monorepo build on Render unless you change the Dockerfile).
+- **Fast default path** — `Dockerfile.render` pulls official `ghcr.io/nofxaios/nofx` images (no monorepo build on Render unless you change the Dockerfile).
 - **Persistent SQLite** — A 5 GB disk at `/app/data` keeps traders, strategies, and exchange configs across deploys and restarts.
 - **Secrets wired in the Blueprint** — `JWT_SECRET` and `DATA_ENCRYPTION_KEY` are auto-generated; RSA keys are created on first boot if missing.
 
@@ -77,13 +76,13 @@ flowchart LR
 
 Region: **Oregon** (`oregon`). Change `region` in `render.yaml` before deploy if you need another region.
 
-Default image source: `ghcr.io/nofxaios/nofx/nofx-backend:latest` and `nofx-frontend:latest` via `Dockerfile.railway` (see [Upgrading](#upgrading) to pin tags or build from source).
+Default image source: `ghcr.io/nofxaios/nofx/nofx-backend:latest` and `nofx-frontend:latest` via `Dockerfile.render` (see [Upgrading](#upgrading) to pin tags or build from source).
 
 ---
 
 ## Quickstart
 
-1. Click **[Deploy to Render](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)** (forks the gallery mirror into your GitHub account), **or** connect this repo directly: Blueprint → `https://github.com/ojusave/nofx` branch **`dev`**.
+1. Click **[Deploy to Render](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)**. GitHub creates a fork of this template in your account.
 2. Review auto-generated secrets (`JWT_SECRET`, `DATA_ENCRYPTION_KEY`). Do not change them after first deploy unless you understand the migration impact.
 3. Click **Apply**. First deploy typically takes **5–10 minutes** (Docker pull, disk attach, container start).
 4. Open your service URL (`https://nofx-xxxx.onrender.com/`). If the system is not initialized, you will see the **registration** screen — create the single admin account (only one user is allowed).
@@ -103,7 +102,7 @@ None at Blueprint apply time. LLM and exchange credentials are configured in the
 |---------|---------|
 | `JWT_SECRET` | Session tokens for the API |
 | `DATA_ENCRYPTION_KEY` | Encrypts sensitive fields at rest |
-| `RSA_PRIVATE_KEY` | Generated on first boot by `railway/start.sh` if unset |
+| `RSA_PRIVATE_KEY` | Generated on first boot by `docker/render-start.sh` if unset |
 
 **Do not rotate `JWT_SECRET` or `DATA_ENCRYPTION_KEY` casually** after traders and exchange keys are stored: existing sessions and encrypted data may break.
 
@@ -148,7 +147,7 @@ External costs (LLM API usage, exchange fees, Telegram) are billed by those prov
 
 ### Pin upstream image versions
 
-Edit `Dockerfile.railway` and replace `:latest` with a specific tag from [NOFX GHCR packages](https://github.com/orgs/NoFxAiOS/packages):
+Edit `Dockerfile.render` and replace `:latest` with a specific tag from [NOFX GHCR packages](https://github.com/orgs/NoFxAiOS/packages):
 
 ```dockerfile
 FROM ghcr.io/nofxaios/nofx/nofx-backend:1.0.0 AS backend
@@ -159,7 +158,7 @@ Redeploy after changing tags.
 
 ### Build from source on Render
 
-Use `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` instead of GHCR pulls if you need a custom build. That increases deploy time and plan requirements; the default `Dockerfile.railway` path is recommended for gallery deploys.
+Use `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` instead of GHCR pulls if you need a custom build. That increases deploy time and plan requirements; the default `Dockerfile.render` path is recommended for gallery deploys.
 
 ### Custom domain
 
@@ -200,7 +199,7 @@ Container stdout includes nginx and Go API output. Use structured log search in 
 ## Upgrading
 
 1. Check [NoFxAiOS/nofx releases](https://github.com/NoFxAiOS/nofx/releases) for new GHCR tags.
-2. Pin or update tags in `Dockerfile.railway` in your fork, or merge upstream into `dev`.
+2. Pin or update tags in `Dockerfile.render` in your fork, or merge upstream from [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx).
 3. Trigger **Manual Deploy** on Render.
 
 Read upstream release notes for database migrations or breaking API changes before upgrading production traders.
@@ -274,8 +273,8 @@ This project is AGPL-3.0. Running or distributing modified NOFX may have copylef
 
 ## Credits and license
 
-- **Application:** [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) (AGPL-3.0) · this fork: [ojusave/nofx](https://github.com/ojusave/nofx)
-- **Render Blueprint:** `render.yaml`, `Dockerfile.railway`, `railway/start.sh`
-- **Gallery:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template) · [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md)
+- **Application:** [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) (AGPL-3.0)
+- **Template:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
+- **Render Blueprint:** `render.yaml`, `Dockerfile.render`, `docker/render-start.sh`
 
 To appear on [render.com/templates](https://render.com/templates), complete the Sanity steps in [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md).
