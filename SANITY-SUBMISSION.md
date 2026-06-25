@@ -12,7 +12,7 @@ Use when filing a **production** catalog entry for [render.com/templates](https:
 ## Blockers before submit
 
 - [x] **`assets/hero.png`** from live deploy screenshot
-- [ ] Repo published under **`render-examples/nofx-render-template`** with `is_template: true`
+- [x] Repo published under **`render-examples/nofx-render-template`** with `is_template: true`
 - [ ] Smoke deploy from an account that does not own the template repo
 - [ ] Sanity **development** draft in Studio (see [`../sanity-drafts/STUDIO-WALKTHROUGH.md`](../sanity-drafts/STUDIO-WALKTHROUGH.md))
 

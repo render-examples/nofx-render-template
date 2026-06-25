@@ -8,7 +8,7 @@ This template packages [NOFX](https://github.com/NoFxAiOS/nofx) for Render using
 
 ![NOFX Config page on Render](./assets/hero.png)
 
-> **Gallery listing:** Target repo is [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template). Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md).
+> **Gallery listing:** GitHub repo is live at [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template). Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md).
 
 **Live demo:** https://nofx-scgi.onrender.com/
 
