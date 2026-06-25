@@ -2,10 +2,10 @@
 
 Use when filing a **production** catalog entry for [render.com/templates](https://render.com/templates).
 
-**GitHub repo (target):** https://github.com/render-examples/nofx-render-template  
+**GitHub repo:** https://github.com/render-examples/nofx-render-template  
 **One-click deploy:** `https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template`  
 **Gallery URL (target):** `https://render.com/templates/nofx`  
-**Live demo:** https://nofx-scgi.onrender.com/
+**Demo URL:** *(optional)* Add after a smoke deploy from this template repo — do not use personal fork deploys
 
 ---
 
@@ -29,7 +29,7 @@ Create document: **Templates** → new document
 | **Slug** | `nofx` |
 | **Description** | Self-host NOFX with one click: an AI trading terminal that connects to 10+ exchanges and LLM providers. Single Render web service with SQLite on a persistent disk. |
 | **GitHub Repository** | `https://github.com/render-examples/nofx-render-template` |
-| **Demo URL** | `https://nofx-scgi.onrender.com/` |
+| **Demo URL** | *(optional)* URL from a deploy of **this template**, not a personal fork |
 | **Image** | Upload `assets/hero.png` (sign-in page; same as `sign-in.png`) |
 | **Stack** | `docker`, `go`, `react`, `sqlite` |
 | **Tags** | `ai`, `trading`, `llm`, `crypto`, `fintech` |

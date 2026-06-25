@@ -4,19 +4,23 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)
 
-This template packages [NOFX](https://github.com/NoFxAiOS/nofx) for Render using official `ghcr.io/nofxaios/nofx` Docker images merged into a single container. You get nginx (UI + reverse proxy), the Go API, and SQLite on a persistent disk without building the upstream monorepo on Render. Fork the template into your GitHub account, apply the Blueprint, then create your admin account on first visit.
+**Template repository:** [github.com/render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
+
+This is a **standalone Render template repo**. It is not tied to any personal fork. One-click deploy forks **this repository** into your GitHub account, then applies the Blueprint below.
+
+The template packages [NOFX](https://github.com/NoFxAiOS/nofx) using official `ghcr.io/nofxaios/nofx` Docker images merged into a single container. You get nginx (UI + reverse proxy), the Go API, and SQLite on a persistent disk without building the upstream monorepo on Render.
 
 ![NOFX sign-in on Render](./assets/hero.png)
 
-**Screenshots from a live Render deploy** ([demo](https://nofx-scgi.onrender.com/)):
+**Screenshots** (from this template deployed on Render):
 
-| Sign in | Config | Agent |
-|---------|--------|-------|
-| ![Sign in](./assets/sign-in.png) | ![Config](./assets/config.png) | ![Agent](./assets/agent.png) |
+![Sign in](./assets/sign-in.png)
 
-> **Gallery listing:** GitHub repo is live at [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template). Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md). Upload **`assets/hero.png`** (sign-in) for the catalog card; Config and Agent appear in the template detail body below.
+![Config — AI models and exchanges](./assets/config.png)
 
-**Live demo:** https://nofx-scgi.onrender.com/
+![Agent — natural-language trader setup](./assets/agent.png)
+
+> **Gallery listing:** Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md). Upload **`assets/hero.png`** (sign-in) for the catalog card.
 
 ---
 
@@ -267,8 +271,12 @@ The application is AGPL-3.0. This template wrapper is MIT; running modified NOFX
 
 ## Credits and license
 
-- **Template wrapper** (this repo): MIT — see [LICENSE](./LICENSE).
-- **NOFX application**: [AGPL-3.0](https://github.com/NoFxAiOS/nofx/blob/main/LICENSE) by [NoFxAiOS](https://github.com/NoFxAiOS/nofx).
-- **Render template pattern**: inspired by other [render-examples](https://github.com/render-examples) gallery templates.
+- **Upstream:** [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) (AGPL-3.0)
+- **Template:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template) (MIT wrapper; see [LICENSE](./LICENSE))
+- **Gallery submission:** [gallery-metadata.json](./gallery-metadata.json), [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md)
 
-Maintained as a community template; not affiliated with NoFxAiOS or Render beyond the examples program.
+### Publish under render-examples
+
+Already published. To update the template, push to `render-examples/nofx-render-template`. To appear on [render.com/templates](https://render.com/templates), complete [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md).
+
+Maintained as a community template; not affiliated with NoFxAiOS beyond upstream packaging.

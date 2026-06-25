@@ -1,7 +1,8 @@
 # yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 #
 # NOFX on Render — one-click template (gallery)
-# Upstream: https://github.com/NoFxAiOS/nofx
+# Repo: https://github.com/render-examples/nofx-render-template
+# Upstream app: https://github.com/NoFxAiOS/nofx
 # Images: https://github.com/orgs/NoFxAiOS/packages
 #
 # Pattern: image-wrapper (official GHCR backend + frontend merged via Dockerfile.railway)
