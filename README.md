@@ -4,7 +4,7 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)
 
-**Repository:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
+**Template repository:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
 
 This template deploys [NOFX](https://github.com/NoFxAiOS/nofx) on Render using the **official GHCR images** from upstream (`nofx-backend` + `nofx-frontend`). Same split as upstream `docker-compose.prod.yml`: private API service, public web UI, SQLite on a persistent disk. No custom Dockerfile in this repo: everything is defined in `render.yaml`.
 
