@@ -1,11 +1,8 @@
 # yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 #
-# NOFX on Render
+# NOFX on Render — one-click gallery template
 # Repo: https://github.com/render-examples/nofx-render-template
 # Upstream: https://github.com/NoFxAiOS/nofx
-#
-# JWT_SECRET and DATA_ENCRYPTION_KEY are auto-generated at apply time.
-# RSA_PRIVATE_KEY is auto-generated on first boot by docker/render-start.sh if unset.
 
 previews:
   generation: off
@@ -15,13 +12,13 @@ projects:
     environments:
       - name: production
         services:
-          - type: web
+          - type: pserv
             name: nofx
-            runtime: docker
-            dockerfilePath: ./Dockerfile.render
+            runtime: image
             plan: starter
             region: oregon
-            healthCheckPath: /health
+            image:
+              url: ghcr.io/nofxaios/nofx/nofx-backend:latest
             disk:
               name: nofx-data
               mountPath: /app/data
@@ -41,3 +38,12 @@ projects:
                 generateValue: true
               - key: DATA_ENCRYPTION_KEY
                 generateValue: true
+
+          - type: web
+            name: nofx-web
+            runtime: image
+            plan: starter
+            region: oregon
+            image:
+              url: ghcr.io/nofxaios/nofx/nofx-frontend:latest
+            healthCheckPath: /health

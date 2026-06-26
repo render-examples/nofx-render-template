@@ -6,56 +6,39 @@
 
 **Repository:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
 
-This repo is the **full NOFX application** (Go API, React UI, Docker files) plus a Render Blueprint. Fork via the button to get your own copy, apply `render.yaml`, and deploy with `Dockerfile.render` (official GHCR images + nginx + SQLite on disk).
-
-Product overview and upstream docs: [docs/README-product.md](./docs/README-product.md) · upstream [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx)
+This template deploys [NOFX](https://github.com/NoFxAiOS/nofx) on Render using the **official GHCR images** from upstream (`nofx-backend` + `nofx-frontend`). Same split as upstream `docker-compose.prod.yml`: private API service, public web UI, SQLite on a persistent disk. No custom Dockerfile in this repo: everything is defined in `render.yaml`.
 
 ![NOFX sign-in on Render](./assets/hero.png)
 
 **Screenshots** (from a Render deploy):
 
+![Sign in](./assets/sign-in.png)
+
 ![Config — AI models and exchanges](./assets/config.png)
 
 ![Agent — natural-language trader setup](./assets/agent.png)
-
-> **Gallery listing:** Catalog entry pending Sanity CMS — see [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md). Upload **`assets/hero.png`** (sign-in) for the catalog card.
 
 ---
 
 ## Table of contents
 
 - [Why deploy NOFX on Render](#why-deploy-nofx-on-render)
-- [Use cases](#use-cases)
 - [What gets deployed](#what-gets-deployed)
 - [Quickstart](#quickstart)
 - [Configuration](#configuration)
 - [Cost breakdown](#cost-breakdown)
-- [Customization](#customization)
-- [Operations](#operations)
 - [Upgrading](#upgrading)
 - [Troubleshooting](#troubleshooting)
-- [FAQ](#faq)
-- [Security](#security)
-- [Caveats and limitations](#caveats-and-limitations)
 - [Credits and license](#credits-and-license)
 
 ---
 
 ## Why deploy NOFX on Render
 
-- **Full source in this repo** — Hack on `web/`, the Go API, and Docker build files; deploy with the included Blueprint.
-- **Fast default path** — `Dockerfile.render` pulls official `ghcr.io/nofxaios/nofx` images (no monorepo build on Render unless you change the Dockerfile).
-- **Persistent SQLite** — A 5 GB disk at `/app/data` keeps traders, strategies, and exchange configs across deploys and restarts.
-- **Secrets wired in the Blueprint** — `JWT_SECRET` and `DATA_ENCRYPTION_KEY` are auto-generated; RSA keys are created on first boot if missing.
-
----
-
-## Use cases
-
-- **Personal AI trading lab** — Connect Hyperliquid, OKX, or other exchanges and test strategies with LLM-assisted configuration.
-- **Strategy prototyping** — Use the Agent chat to describe traders in natural language before wiring API keys in Config.
-- **Team demo environment** — Spin up an isolated NOFX instance per engineer via the one-click template fork.
-- **24/7 paper or live bots** — Keep traders running on Render's always-on Starter plan (upgrade if you need more CPU/RAM).
+- **Official upstream images** — `ghcr.io/nofxaios/nofx/nofx-backend` and `nofx-frontend` at `:latest` (pin tags in `render.yaml` for production).
+- **Blueprint-only deploy** — `render.yaml` defines services, disk, and secrets; no merge Dockerfile to maintain in this template repo.
+- **Persistent SQLite** — 5 GB disk on the backend service at `/app/data/data.db`.
+- **Matches upstream layout** — Frontend nginx proxies `/api/` to the private `nofx` backend on port 8080 (Render private network).
 
 ---
 
@@ -63,30 +46,30 @@ Product overview and upstream docs: [docs/README-product.md](./docs/README-produ
 
 ```mermaid
 flowchart LR
-  user["Browser"] --> nginx["nginx :PORT"]
-  nginx --> ui["React UI static"]
-  nginx --> api["Go API :8081"]
+  user["Browser"] --> web["nofx-web (official frontend image)"]
+  web -->|"/api/ private network"| api["nofx (official backend image)"]
   api --> db[("SQLite on disk")]
 ```
 
 | Resource | Type | Plan | Purpose |
 |----------|------|------|---------|
-| `nofx` | Web (Docker) | Starter | nginx + Go API + React UI |
+| `nofx` | Private service (image) | Starter | Go API + SQLite disk |
+| `nofx-web` | Web (image) | Starter | React UI + nginx (public URL) |
 | `nofx-data` | Disk 5 GB | — | SQLite at `/app/data/data.db` |
 
-Region: **Oregon** (`oregon`). Change `region` in `render.yaml` before deploy if you need another region.
+Region: **Oregon** (`oregon`).
 
-Default image source: `ghcr.io/nofxaios/nofx/nofx-backend:latest` and `nofx-frontend:latest` via `Dockerfile.render` (see [Upgrading](#upgrading) to pin tags or build from source).
+Open the **`nofx-web`** service URL after deploy (not the private backend).
 
 ---
 
 ## Quickstart
 
-1. Click **[Deploy to Render](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)**. GitHub creates a fork of this template in your account.
-2. Review auto-generated secrets (`JWT_SECRET`, `DATA_ENCRYPTION_KEY`). Do not change them after first deploy unless you understand the migration impact.
-3. Click **Apply**. First deploy typically takes **5–10 minutes** (Docker pull, disk attach, container start).
-4. Open your service URL (`https://nofx-xxxx.onrender.com/`). If the system is not initialized, you will see the **registration** screen — create the single admin account (only one user is allowed).
-5. Sign in, open **Config**, add **AI models** and **exchange keys**, then **Create Trader** or use the **Agent** tab.
+1. Click **[Deploy to Render](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)**. GitHub forks this template into your account.
+2. Review auto-generated secrets on the **`nofx`** service: `JWT_SECRET`, `DATA_ENCRYPTION_KEY`.
+3. Click **Apply**. First deploy typically takes **5–10 minutes**.
+4. Open the **`nofx-web`** URL. Create the single admin account on first visit if prompted.
+5. In **Config**, add AI models and exchange keys, then create a trader or use the **Agent** tab.
 
 ---
 
@@ -94,38 +77,24 @@ Default image source: `ghcr.io/nofxaios/nofx/nofx-backend:latest` and `nofx-fron
 
 ### Required secrets
 
-None at Blueprint apply time. LLM and exchange credentials are configured in the NOFX UI after login.
+None at Apply time. LLM and exchange keys are set in the UI after login.
 
-### Auto-generated secrets
+### Auto-generated secrets (backend service)
 
 | Env var | Purpose |
 |---------|---------|
-| `JWT_SECRET` | Session tokens for the API |
+| `JWT_SECRET` | Session tokens |
 | `DATA_ENCRYPTION_KEY` | Encrypts sensitive fields at rest |
-| `RSA_PRIVATE_KEY` | Generated on first boot by `docker/render-start.sh` if unset |
 
-**Do not rotate `JWT_SECRET` or `DATA_ENCRYPTION_KEY` casually** after traders and exchange keys are stored: existing sessions and encrypted data may break.
+### Wired in `render.yaml`
 
-### Wired automatically
-
-| Env var | Value / source |
-|---------|----------------|
+| Env var | Value |
+|---------|--------|
 | `DB_TYPE` | `sqlite` |
 | `DB_PATH` | `/app/data/data.db` |
 | `TZ` | `UTC` |
-| `TRANSPORT_ENCRYPTION` | `false` (TLS terminates at Render) |
+| `TRANSPORT_ENCRYPTION` | `false` |
 | `AI_MAX_TOKENS` | `8000` |
-| `PORT` | Set by Render; nginx listens here |
-
-### Optional tweaks
-
-| Env var | Default | Notes |
-|---------|---------|-------|
-| `TRANSPORT_ENCRYPTION` | `false` | Leave off on Render; HTTPS is provided by the platform |
-| `AI_MAX_TOKENS` | `8000` | Raise if long agent responses truncate |
-| Plan | `starter` | Bump to `standard` if the container OOMs during heavy agent workloads |
-
-Configure in the UI (not env vars): OpenAI, Anthropic, DeepSeek, custom LLM endpoints, exchange API keys, Telegram bot token.
 
 ---
 
@@ -133,148 +102,37 @@ Configure in the UI (not env vars): OpenAI, Anthropic, DeepSeek, custom LLM endp
 
 | Resource | Plan | Approx. monthly (USD) |
 |----------|------|------------------------|
-| Web service | Starter | ~$7 |
-| Persistent disk | 5 GB | ~$5 |
-| **Total** | | **~$12** |
+| Private service (`nofx`) | Starter | ~$7 |
+| Web service (`nofx-web`) | Starter | ~$7 |
+| Disk | 5 GB | ~$5 |
+| **Total** | | **~$19** |
 
-Free tier is not recommended: the service sleeps after inactivity and cold starts can cause transient API errors during login or registration.
-
-External costs (LLM API usage, exchange fees, Telegram) are billed by those providers, not Render.
-
----
-
-## Customization
-
-### Pin upstream image versions
-
-Edit `Dockerfile.render` and replace `:latest` with a specific tag from [NOFX GHCR packages](https://github.com/orgs/NoFxAiOS/packages):
-
-```dockerfile
-FROM ghcr.io/nofxaios/nofx/nofx-backend:1.0.0 AS backend
-FROM ghcr.io/nofxaios/nofx/nofx-frontend:1.0.0 AS frontend
-```
-
-Redeploy after changing tags.
-
-### Build from source on Render
-
-Use `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` instead of GHCR pulls if you need a custom build. That increases deploy time and plan requirements; the default `Dockerfile.render` path is recommended for gallery deploys.
-
-### Custom domain
-
-In the Render dashboard: **Settings → Custom Domains** on the `nofx` service. TLS certificates are managed by Render.
-
-### Larger SQLite or uploads
-
-Increase `disk.sizeGB` in `render.yaml` (requires Blueprint update and redeploy). SQLite stays at `DB_PATH=/app/data/data.db`.
-
-### Switch region
-
-Change `region` under the web service in `render.yaml` before first deploy, or migrate manually by creating a new service in the target region.
-
----
-
-## Operations
-
-### Backups
-
-Copy `/app/data/data.db` periodically via Render Shell or a one-off job. Render disk snapshots are not a substitute for application-level backup if you rely on trader history.
-
-### Monitoring
-
-- Health check: `GET /health` (nginx only, returns 200)
-- Backend check: `GET /api/health` on your service URL
-- Logs: Render dashboard → **Logs** for the `nofx` service
-
-### Scaling
-
-This template runs a **single instance** with SQLite on a mounted disk. Horizontal scaling is not supported without migrating to Postgres and re-architecting. Vertical scaling: upgrade plan in the dashboard.
-
-### Logs
-
-Container stdout includes nginx and Go API output. Use structured log search in the Render dashboard for `REGISTRATION_ERROR` or `502` during cold starts.
+External LLM and exchange fees are billed by those providers.
 
 ---
 
 ## Upgrading
 
 1. Check [NoFxAiOS/nofx releases](https://github.com/NoFxAiOS/nofx/releases) for new GHCR tags.
-2. Pin or update tags in `Dockerfile.render` in your fork, or merge upstream from [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx).
-3. Trigger **Manual Deploy** on Render.
-
-Read upstream release notes for database migrations or breaking API changes before upgrading production traders.
+2. Pin `image.url` tags in `render.yaml` in your fork (replace `:latest`).
+3. Manual deploy on Render.
 
 ---
 
 ## Troubleshooting
 
-### Registration shows "Server error"
+**Registration shows "Server error"**  
+Wait for cold start, then retry. Confirm `GET /api/health` on the **`nofx-web`** URL returns 200. If already initialized, use Login.
 
-Often a cold start on Starter/Free: wait 30–60 seconds and retry. Confirm `GET /api/health` returns 200. If the system is already initialized (`GET /api/config` → `"initialized": true`), use **Login** instead of Register.
+**UI loads but API fails**  
+Ensure the private backend service is named **`nofx`** (frontend image proxies to `http://nofx:8080`). Both services must be in the same Blueprint project.
 
-### Toast: "API Not Found" (404)
-
-The frontend treats any HTTP 404 as this message. Some routes (for example legacy prompt-template endpoints) may 404 while the app is still usable. Verify core endpoints: `/api/config`, `/api/health`.
-
-### Health check passes but UI cannot log in
-
-Ensure the disk is mounted at `/app/data` and `DB_PATH` matches. A missing disk resets SQLite on every deploy.
-
-### Docker pull fails for GHCR images
-
-Confirm `ghcr.io/nofxaios/nofx/*` images are public and the tag exists. Pin to a known-good tag if `:latest` moved.
-
-### Out of memory
-
-Upgrade from Starter to Standard if the Go process or agent workloads exit during startup.
-
----
-
-## FAQ
-
-**Can I have multiple admin users?**  
-NOFX uses single-user onboarding: the first registration closes public signup.
-
-**Where do I set OpenAI or Hyperliquid keys?**  
-In the web UI under **Config** after login, not in Render env vars.
-
-**Does `/health` prove the API is up?**  
-No. It only checks nginx. Use `/api/health` for the Go backend.
-
-**Can I reset a forgotten password on Render?**  
-Use the upstream CLI (`nofx reset-password`) via Render Shell if documented in the NOFX repo; there is no public forgot-password flow on ephemeral demos.
-
-**Is this financial advice?**  
-No. NOFX is trading software. You are responsible for compliance, risk, and API key security.
-
-**Why AGPL?**  
-This project is AGPL-3.0. Running or distributing modified NOFX may have copyleft obligations — see [LICENSE](./LICENSE).
-
----
-
-## Security
-
-- TLS terminates at Render; keep `TRANSPORT_ENCRYPTION=false` unless you add internal mTLS.
-- Store exchange and LLM keys only in the encrypted UI/config layer; do not commit them to your fork.
-- Rotate compromised API keys at the provider; consider redeploying with new `DATA_ENCRYPTION_KEY` only if you understand data loss implications.
-- Report vulnerabilities via the [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) security policy.
-
----
-
-## Caveats and limitations
-
-- **SQLite + single disk** — One Render instance only; not HA.
-- **`:latest` images** — Reproducibility requires pinning tags in your fork.
-- **Starter spin-down** — Free/idle services cause slow first requests.
-- **Trading risk** — Live keys on a cloud VM require your own security review.
-- **AGPL** — Distribution of modified NOFX may require source disclosure; consult your legal team.
+**Data lost after redeploy**  
+Confirm the disk is attached to **`nofx`** at `/app/data`.
 
 ---
 
 ## Credits and license
 
-- **Application:** [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) (AGPL-3.0)
-- **Template:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
-- **Render Blueprint:** `render.yaml`, `Dockerfile.render`, `docker/render-start.sh`
-
-To appear on [render.com/templates](https://render.com/templates), complete the Sanity steps in [SANITY-SUBMISSION.md](./SANITY-SUBMISSION.md).
+- **Upstream:** [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) (AGPL-3.0)
+- **Template:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template) (MIT wrapper — see [LICENSE](./LICENSE))
