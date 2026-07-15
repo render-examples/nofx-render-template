@@ -1,138 +1,166 @@
+<div align="center">
+
 # NOFX on Render
 
-> One-click self-hosted NOFX: an AI-powered trading terminal with multi-exchange support, strategy studio, and a conversational agent.
+Deploy **NOFX**, the AI trading terminal, on Render with official GHCR backend and frontend images plus SQLite on a persistent disk.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)
+<p>
+  <a href="https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template">
+    <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" />
+  </a>
+</p>
 
-**Template repository:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template)
+<p>
+  <a href="https://render.com">
+    <img src="https://img.shields.io/badge/Render-Web%20%2B%20Private-46e3b7?logo=render&logoColor=white" alt="Render" />
+  </a>
+  <a href="https://github.com/NoFxAiOS/nofx">
+    <img src="https://img.shields.io/badge/Upstream-NOFX-111111?logo=github&logoColor=white" alt="NOFX" />
+  </a>
+  <a href="https://github.com/orgs/NoFxAiOS/packages">
+    <img src="https://img.shields.io/badge/Images-GHCR-2496ED?logo=docker&logoColor=white" alt="GHCR" />
+  </a>
+</p>
 
-This template deploys [NOFX](https://github.com/NoFxAiOS/nofx) on Render using the **official GHCR images** from upstream (`nofx-backend` + `nofx-frontend`). Same split as upstream `docker-compose.prod.yml`: private API service, public web UI, SQLite on a persistent disk. No custom Dockerfile in this repo: everything is defined in `render.yaml`.
+</div>
 
-![NOFX sign-in on Render](./assets/hero.png)
+![NOFX](./assets/hero.png)
 
-**Screenshots** (from a Render deploy):
+## What This Template Shows
 
-![Sign in](./assets/sign-in.png)
+This repo packages NOFX's official GHCR images as a one-click Render Blueprint. No Go/source build on Render.
 
-![Config — AI models and exchanges](./assets/config.png)
+| Piece | Role |
+| --- | --- |
+| **[NOFX](https://github.com/NoFxAiOS/nofx)** | AI trading terminal (multi-exchange + LLM) |
+| **[nofx-backend](https://github.com/orgs/NoFxAiOS/packages)** | Private API image + SQLite disk |
+| **[nofx-frontend](https://github.com/orgs/NoFxAiOS/packages)** | Public UI (nginx proxies `/api/` to backend) |
+| **[Render Private Service](https://render.com/docs/private-services)** | `nofx` API on the private network |
+| **[Render Web Service](https://render.com/docs/web-services)** | `nofx-web` public UI |
+| **[Render Disk](https://render.com/docs/disks)** | SQLite at `/app/data` |
 
-![Agent — natural-language trader setup](./assets/agent.png)
-
----
-
-## Table of contents
-
-- [Why deploy NOFX on Render](#why-deploy-nofx-on-render)
-- [What gets deployed](#what-gets-deployed)
-- [Quickstart](#quickstart)
-- [Configuration](#configuration)
-- [Cost breakdown](#cost-breakdown)
-- [Upgrading](#upgrading)
-- [Troubleshooting](#troubleshooting)
-- [Credits and license](#credits-and-license)
-
----
-
-## Why deploy NOFX on Render
-
-- **Official upstream images** — `ghcr.io/nofxaios/nofx/nofx-backend` and `nofx-frontend` at `:latest` (pin tags in `render.yaml` for production).
-- **Blueprint-only deploy** — `render.yaml` defines services, disk, and secrets; no merge Dockerfile to maintain in this template repo.
-- **Persistent SQLite** — 5 GB disk on the backend service at `/app/data/data.db`.
-- **Matches upstream layout** — Frontend nginx proxies `/api/` to the private `nofx` backend on port 8080 (Render private network).
-
----
-
-## What gets deployed
+## Architecture
 
 ```mermaid
 flowchart LR
-  user["Browser"] --> web["nofx-web (official frontend image)"]
-  web -->|"/api/ private network"| api["nofx (official backend image)"]
-  api --> db[("SQLite on disk")]
+  browser["Browser"] --> web["nofx-web<br/>frontend image"]
+  web -->|"/api/ private"| api["nofx<br/>backend image"]
+  api --> disk[("/app/data SQLite")]
 ```
 
-| Resource | Type | Plan | Purpose |
-|----------|------|------|---------|
-| `nofx` | Private service (image) | Starter | Go API + SQLite disk |
-| `nofx-web` | Web (image) | Starter | React UI + nginx (public URL) |
-| `nofx-data` | Disk 5 GB | — | SQLite at `/app/data/data.db` |
+### How It Works
 
-Region: **Oregon** (`oregon`).
+1. Click **Deploy to Render**. Render forks this template and applies [`render.yaml`](./render.yaml).
+2. Render pulls `nofx-backend` and `nofx-frontend` from GHCR.
+3. Open the **`nofx-web`** URL (not the private backend).
+4. Sign in / configure exchanges and LLM providers in the UI.
+5. Data persists on the backend disk across deploys.
 
-Open the **`nofx-web`** service URL after deploy (not the private backend).
+| Resource | Type | Plan | Notes |
+| --- | --- | --- | --- |
+| `nofx` | Private (`runtime: image`) | **starter** | Must stay named `nofx` (frontend proxies to `http://nofx:8080`) |
+| `nofx-web` | Web (`runtime: image`) | **starter** | Health `/health`; public URL |
+| `nofx-data` | Disk (5 GB) |  | Mounted on backend at `/app/data` |
 
----
+Default region: **oregon**. Previews are off. Pin image tags in `render.yaml` for production (Blueprint currently uses `:latest`).
 
-## Quickstart
+## Quick Start
 
-1. Click **[Deploy to Render](https://render.com/deploy-template/api/github/start?template_repo=nofx-render-template)**. GitHub forks this template into your account.
-2. Review auto-generated secrets on the **`nofx`** service: `JWT_SECRET`, `DATA_ENCRYPTION_KEY`.
-3. Click **Apply**. First deploy typically takes **5–10 minutes**.
-4. Open the **`nofx-web`** URL. Create the single admin account on first visit if prompted.
-5. In **Config**, add AI models and exchange keys, then create a trader or use the **Agent** tab.
+### Prerequisites
 
----
+- A [Render account](https://dashboard.render.com/register?utm_source=github&utm_medium=referral&utm_campaign=ojus_demos&utm_content=readme_link)
+- Exchange / LLM credentials configured in the NOFX UI after deploy
+
+### Deploy
+
+1. Click **Deploy to Render** above and fork into your GitHub account.
+2. On Apply, confirm `nofx` (private) and `nofx-web` (public).
+3. Wait until services are **Live** (~3–8 minutes).
+4. Open the **`nofx-web`** URL and finish setup.
+5. Configure API keys in the product UI.
+
+Health check:
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" https://<your-nofx-web>.onrender.com/health
+```
+
+## Features
+
+| Feature | Description |
+| --- | --- |
+| **Official images** | GHCR backend + frontend; no source build |
+| **Private API** | Backend not on the public internet |
+| **Persistent SQLite** | 5 GB disk on the backend |
+| **Generated secrets** | `JWT_SECRET`, `DATA_ENCRYPTION_KEY` |
+| **One-click Blueprint** | `projects` / `environments` wrapper |
 
 ## Configuration
 
-### Required secrets
+| Variable | Source | Description |
+| --- | --- | --- |
+| `DB_TYPE` / `DB_PATH` | Wired | SQLite at `/app/data/data.db` |
+| `TZ` | Wired | `UTC` |
+| `TRANSPORT_ENCRYPTION` | Wired | `false` (template default) |
+| `AI_MAX_TOKENS` | Wired | `8000` |
+| `JWT_SECRET` | Auto-generated | Auth signing |
+| `DATA_ENCRYPTION_KEY` | Auto-generated | Data at rest in app |
 
-None at Apply time. LLM and exchange keys are set in the UI after login.
+Exchange and LLM credentials are set in the NOFX UI after deploy.
 
-### Auto-generated secrets (backend service)
+### Pin images
 
-| Env var | Purpose |
-|---------|---------|
-| `JWT_SECRET` | Session tokens |
-| `DATA_ENCRYPTION_KEY` | Encrypts sensitive fields at rest |
+```yaml
+image:
+  url: ghcr.io/nofxaios/nofx/nofx-backend:<tag>
+```
 
-### Wired in `render.yaml`
+`autoDeployTrigger: off` so floating tags do not redeploy until **Manual Deploy**.
 
-| Env var | Value |
-|---------|--------|
-| `DB_TYPE` | `sqlite` |
-| `DB_PATH` | `/app/data/data.db` |
-| `TZ` | `UTC` |
-| `TRANSPORT_ENCRYPTION` | `false` |
-| `AI_MAX_TOKENS` | `8000` |
+## Cost
 
----
+| Resource | Approx. monthly |
+| --- | ---: |
+| `nofx` private (Starter) | ~$7 |
+| `nofx-web` (Starter) | ~$7 |
+| Disk (5 GB) | ~$1.25 |
+| **Total** | **~$15–16** |
 
-## Cost breakdown
-
-| Resource | Plan | Approx. monthly (USD) |
-|----------|------|------------------------|
-| Private service (`nofx`) | Starter | ~$7 |
-| Web service (`nofx-web`) | Starter | ~$7 |
-| Disk | 5 GB | ~$5 |
-| **Total** | | **~$19** |
-
-External LLM and exchange fees are billed by those providers.
-
----
-
-## Upgrading
-
-1. Check [NoFxAiOS/nofx releases](https://github.com/NoFxAiOS/nofx/releases) for new GHCR tags.
-2. Pin `image.url` tags in `render.yaml` in your fork (replace `:latest`).
-3. Manual deploy on Render.
-
----
+Exchange/LLM fees are separate. Keep both services in the same region and do not rename `nofx`.
 
 ## Troubleshooting
 
-**Registration shows "Server error"**  
-Wait for cold start, then retry. Confirm `GET /api/health` on the **`nofx-web`** URL returns 200. If already initialized, use Login.
+| Problem | Solution |
+| --- | --- |
+| UI loads but API fails | Backend service must be named `nofx`; check private network / logs. |
+| Health check fails on web | Confirm `nofx-web` image pull; retry Manual Deploy. |
+| Data lost after redeploy | Disk must remain on `nofx` at `/app/data`. |
+| Image pull failures | Confirm GHCR package visibility / tag exists; retry deploy. |
 
-**UI loads but API fails**  
-Ensure the private backend service is named **`nofx`** (frontend image proxies to `http://nofx:8080`). Both services must be in the same Blueprint project.
+## Project Structure
 
-**Data lost after redeploy**  
-Confirm the disk is attached to **`nofx`** at `/app/data`.
+```
+render.yaml       Render Blueprint (images + disk)
+README.md         This file
+LICENSE           MIT (template wrapper)
+.env.example      Optional notes
+assets/           Hero
+```
 
----
+## Learn More
 
-## Credits and license
+**Render:**
+- [Web Services](https://render.com/docs/web-services)
+- [Private Services](https://render.com/docs/private-services)
+- [Disks](https://render.com/docs/disks)
+- [Blueprints](https://render.com/docs/infrastructure-as-code)
 
-- **Upstream:** [NoFxAiOS/nofx](https://github.com/NoFxAiOS/nofx) (AGPL-3.0)
-- **Template:** [render-examples/nofx-render-template](https://github.com/render-examples/nofx-render-template) (MIT wrapper — see [LICENSE](./LICENSE))
+**NOFX:**
+- [Upstream repo](https://github.com/NoFxAiOS/nofx)
+- [GHCR packages](https://github.com/orgs/NoFxAiOS/packages)
+
+## License
+
+[MIT](LICENSE) for this template wrapper.
+
+Upstream [NOFX](https://github.com/NoFxAiOS/nofx) license: see upstream repo. Star that project if this helped.

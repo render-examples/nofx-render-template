@@ -1,4 +1,8 @@
-.env
-.env.local
 .DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
 *.log
+.idea/
+.vscode/

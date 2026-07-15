@@ -1,8 +1,10 @@
 # yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 #
-# NOFX on Render — one-click gallery template
+# NOFX on Render: one-click gallery template
 # Repo: https://github.com/render-examples/nofx-render-template
 # Upstream: https://github.com/NoFxAiOS/nofx
+#
+# Pattern: image-wrapper (official GHCR backend + frontend images)
 
 previews:
   generation: off
@@ -19,6 +21,7 @@ projects:
             region: oregon
             image:
               url: ghcr.io/nofxaios/nofx/nofx-backend:latest
+            autoDeployTrigger: off
             disk:
               name: nofx-data
               mountPath: /app/data
@@ -47,3 +50,4 @@ projects:
             image:
               url: ghcr.io/nofxaios/nofx/nofx-frontend:latest
             healthCheckPath: /health
+            autoDeployTrigger: off
